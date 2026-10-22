@@ -1,5 +1,12 @@
 # Changelog
 
+## October 22, 2026 (night)
+
+### Test keys rotated
+
+- config.js key id updated to the regenerated Razorpay test key (previous key revoked by the owner). Backend Script Properties updated in the live Apps Script project. End-to-end click-test re-run and passed 8:22 PM IST (ticket ADYA-D4FVCV, payment captured Rs 499 via test netbanking, Sheet row verified and removed).
+
+
 ## October 22, 2026 (evening)
 
 ### "Why Rs 499" explainer at the fee step
