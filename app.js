@@ -75,7 +75,7 @@
      .then(function(j){
        btn.disabled=false; $('submitTxt').textContent=ST;
        if(!j.ok){ var m={bad_email:'The email address looks invalid.',too_big:'The file is too large.',no_deck:'A deck is required.',payment_not_verified:'The payment could not be verified. If money was taken, it is auto-refunded by Razorpay - please try again or write to us.',fee_required:'The Rs 499 review fee is required for open applications.',bad_utr:'Enter the 12-digit UTR from your UPI app after paying.',bad_invite:'This invitation code is no longer valid.',invite_used_up:'This code has no nominations left.'}[j.error]||'Something went wrong on our side. Please try again.';
-         if($('payCard')&&!$('payCard').classList.contains('hidden')){ $('payCard').classList.add('hidden'); $('formCard').classList.remove('hidden'); var pb2=$('payBtn'); if(pb2){ pb2.disabled=false; $('payTxt').textContent=rzpMode()?'Pay Rs 499 & submit':'Submit application'; } }
+         if($('payCard')&&!$('payCard').classList.contains('hidden')){ stopQrPoll(); $('payCard').classList.add('hidden'); $('formCard').classList.remove('hidden'); var pb2=$('payBtn'); if(pb2){ pb2.disabled=false; pb2.classList.toggle('hidden',qrMode()); $('payTxt').textContent=checkoutMode()?'Pay Rs 499 & submit':'Submit application'; } }
          return fail(m); }
        LS.set('adya_ticket',{email:payload.email,ticket:j.ticket,code:j.code});
        $('ticketNo').textContent=j.ticket; $('myCode').textContent=j.code; $('invLeft').textContent=j.invites;
