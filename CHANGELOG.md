@@ -31,3 +31,10 @@
 - UPI-UTR manual bridge retained as a hidden fallback (provider switch in config.js).
 - Fee mode flag in Code.gs: FEE_MODE 'soft' pre-live, 'enforce' once live keys are in.
 - Backend v12 deployed with TEST keys (order creation verified live: test order created successfully from the deployed web app). End-to-end click-test PASSED (22 Oct 19:05 IST): test netbanking payment pay_TqyKq5fwbScPXm verified by the backend (signature + status + amount), Sheet row written with fee columns N-Q ('paid (razorpay captured)'), ack email sent, ticket ADYA-NBG727. Razorpay checkout note: the test bank simulator opens in a popup tab. Live keys after Razorpay KYC clears (1-2 business days).
+
+## 23 Oct 2026 - Clarity quick-backs + INP hardening + metrics hygiene
+
+- Hero: added a kicker line above the H1 ("Invitation-only venture network for founders") and rewrote the hero sub-copy to lead with the value stack (direct VC connects, closed founder community, deck-to-decision pathway) so first-time visitors understand Adya's purpose in seconds (targets the 24.1% quick-backs signal from Microsoft Clarity).
+- INP/performance hardening: hero background switched from skyline.jpg (135 KB) to skyline.webp (82 KB, saturation baked in); removed the runtime `filter: saturate()` on the background layer; removed backdrop-blur from form inputs and pills (both are known INP contributors on low-end devices); hero image preloaded on the landing page.
+- Metrics hygiene: Clarity snippet now skips loading entirely on our own test sessions. Set `?internal=1` on any page to flag the device as internal (persisted in localStorage `adya_internal=1`); `?internal=0` clears it. Real visitor tracking is unchanged.
+- robots.txt cleanup verified live: the old `Disallow: /vault.html` and `Disallow: /padhai.html` lines (root cause of those pages not indexing) were already removed; re-indexing requested in Search Console for faq, communities, vault and padhai.
