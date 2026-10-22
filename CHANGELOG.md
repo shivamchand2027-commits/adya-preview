@@ -38,3 +38,12 @@
 - INP/performance hardening: hero background switched from skyline.jpg (135 KB) to skyline.webp (82 KB, saturation baked in); removed the runtime `filter: saturate()` on the background layer; removed backdrop-blur from form inputs and pills (both are known INP contributors on low-end devices); hero image preloaded on the landing page.
 - Metrics hygiene: Clarity snippet now skips loading entirely on our own test sessions. Set `?internal=1` on any page to flag the device as internal (persisted in localStorage `adya_internal=1`); `?internal=0` clears it. Real visitor tracking is unchanged.
 - robots.txt cleanup verified live: the old `Disallow: /vault.html` and `Disallow: /padhai.html` lines (root cause of those pages not indexing) were already removed; re-indexing requested in Search Console for faq, communities, vault and padhai.
+
+## 23 Oct 2026 - Step 5 polish: SEO, structured data, accessibility
+
+- Sub-pages (faq, communities, vault, padhai) now carry full Open Graph + Twitter Card meta (they previously had none) and per-page WebPage JSON-LD.
+- faq.html gained FAQPage structured data (24 Q&A pairs extracted from the live page) for Google rich results.
+- Accessibility: skip-to-main-content link on every page (visible on keyboard focus), gold :focus-visible ring for links, buttons, inputs and FAQ summaries, aria-label on the deck-link input.
+- Footers: all five pages now carry the same footer; the stale FAQ footer line "No money is collected from applicants" was replaced with the accurate Rs 499 open-application wording (matching the homepage footer that shipped with the fee module).
+- Removed stale skyline.jpg preloads (the CSS has used skyline.webp since the INP round); sub-pages now preload the webp hero.
+- Verified on the preview site: JSON-LD parses, skip link and footer render, payment flow (form -> pay step) intact.
