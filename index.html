@@ -122,17 +122,16 @@
         <p>Rs 499 pays for the read, nothing else. It does not buy admission, and it does not change the Committee's bar. Most applicants are still declined.</p>
       </div>
     </div>
-    <div id="upiBlock">
+    <div id="qrBlock" class="hidden">
       <div class="paybox">
-        <img src="upi-qr.png" alt="UPI QR code to pay Rs 499 to Adya Capital" class="payqr" width="180" height="180">
+        <img id="qrImg" alt="UPI QR code to pay Rs 499 to Adya Capital" class="payqr" width="180" height="180">
         <div class="paybox-r">
           <div class="ticket"><span>Fee</span> <b>&#8377;499</b></div>
-          <div class="code-row" style="margin-top:10px"><div class="code" id="upiId">8860237965@yescred</div><button class="copybtn" id="upiCopy" type="button">Copy UPI ID</button></div>
-          <p class="tiny">Scan the QR or pay the UPI ID from any UPI app (GPay, PhonePe, Paytm, BHIM). Amount: exactly Rs 499.</p>
+          <p class="tiny" style="margin-top:10px">Scan with any UPI app (GPay, PhonePe, Paytm, BHIM). This QR is made just for your application and takes exactly Rs 499, once.</p>
+          <p class="tiny qrstat" id="qrStatus">Preparing your payment QR...</p>
+          <button class="linklike" id="qrCardFallback" type="button">Pay by card or netbanking instead</button>
         </div>
       </div>
-      <label style="margin-top:16px">UPI transaction ID (UTR) <small>(12 digits, in your UPI app's payment history after paying)</small>
-        <input type="text" id="utr" inputmode="numeric" autocomplete="off" maxlength="18" placeholder="e.g. 432109876512"></label>
     </div>
     <div id="rzpBlock" class="hidden">
       <div class="ticket"><span>Fee</span> <b>&#8377;499</b></div>
@@ -140,7 +139,6 @@
     </div>
     <button type="button" class="btn lg" id="payBtn" style="margin-top:14px"><span id="payTxt">Submit application</span><span class="i">&rarr;</span></button>
     <p class="err" id="payErr" role="alert"></p>
-    <p class="tiny" id="feeNoteUpi">The Committee verifies every payment before review begins. A wrong or fake UTR declines the application. The fee pays for review only - it does not buy admission, and it does not change the Committee's bar.</p>
     <p class="tiny hidden" id="feeNoteRzp">Payments are processed securely by Razorpay; we never see your card or bank details. The fee pays for review only - it does not buy admission, and it does not change the Committee's bar.</p>
     <button class="btn ghost sm" id="payBack" type="button" style="margin-top:12px">Back to the form</button>
   </section>
@@ -152,6 +150,7 @@
     <p class="tiny">Save this ticket. You need your email and ticket to check your status.</p>
     <p class="tiny hidden" id="feePend">Fee: Rs 499 by UPI (UTR <b id="feeUtr"></b>) - received, verification pending. Review starts once the payment is verified.</p>
     <p class="tiny hidden" id="feePaidRzp">Fee: Rs 499 paid via Razorpay - receipt emailed by Razorpay. Your application is in the review queue.</p>
+    <p class="tiny hidden" id="feePaidQr">Fee: Rs 499 paid by UPI. Your application is in the review queue.</p>
     <div class="refbox">
       <h3>You may nominate <span id="invLeft">5</span> founders. Choose carefully.</h3>
       <p>Your name stands behind every founder you invite. Nominate only people you would vouch for: those who earn a place, not those who ask for one.</p>

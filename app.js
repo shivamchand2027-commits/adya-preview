@@ -82,6 +82,7 @@
        $('sEmail').value=payload.email; $('sTicket').value=j.ticket; setShare(j.code);
        if(payload.feeMethod==='upi'&&payload.utr){ $('feeUtr').textContent=payload.utr; $('feePend').classList.remove('hidden'); }
        if(payload.feeMethod==='razorpay'&&$('feePaidRzp')) $('feePaidRzp').classList.remove('hidden');
+       if(payload.feeMethod==='upi_qr'&&$('feePaidQr')) $('feePaidQr').classList.remove('hidden');
        $('formCard').classList.add('hidden'); if($('payCard')) $('payCard').classList.add('hidden'); $('doneCard').classList.remove('hidden');
        $('doneCard').scrollIntoView({behavior:'smooth'});
      })
@@ -110,22 +111,71 @@
   });
 
   /* ---------- open-application fee (Rs 499) ---------- */
-  $('payBack').addEventListener('click',function(){ $('payCard').classList.add('hidden'); $('formCard').classList.remove('hidden'); $('formCard').scrollIntoView({behavior:'smooth'}); var pb=$('payBtn'); pb.disabled=false; $('payTxt').textContent=rzpMode()?'Pay Rs 499 & submit':'Submit application'; });
-  $('upiCopy').addEventListener('click',function(){ copyText($('upiId').textContent,this); });
-  function rzpMode(){ return window.AdyaPay&&AdyaPay.enabled()&&(window.PAY_CONFIG||{}).provider==='razorpay'; }
+  $('payBack').addEventListener('click',function(){ stopQrPoll(); $('payCard').classList.add('hidden'); $('formCard').classList.remove('hidden'); $('formCard').scrollIntoView({behavior:'smooth'}); var pb=$('payBtn'); pb.disabled=false; pb.classList.toggle('hidden',qrMode()); $('payTxt').textContent=checkoutMode()?'Pay Rs 499 & submit':'Submit application'; });
+  function feeOn(){ return window.AdyaPay&&AdyaPay.enabled(); }
+  function qrMode(){ return feeOn()&&(window.PAY_CONFIG||{}).provider==='qr'; }
+  function checkoutMode(){ return feeOn()&&(window.PAY_CONFIG||{}).provider==='razorpay'; }
+  var qrTimer=null, qrId='', qrBusy=false;
+  function stopQrPoll(){ if(qrTimer){ clearInterval(qrTimer); qrTimer=null; } qrBusy=false; }
+  function qrStatus(msg,ok){ var s=$('qrStatus'); if(!s) return; s.textContent=msg; s.classList.toggle('ok',!!ok); }
   function setupPayCard(){
-    var rzp=rzpMode();
-    if($('upiBlock')) $('upiBlock').classList.toggle('hidden',rzp);
-    if($('rzpBlock')) $('rzpBlock').classList.toggle('hidden',!rzp);
-    if($('feeNoteUpi')) $('feeNoteUpi').classList.toggle('hidden',rzp);
-    if($('feeNoteRzp')) $('feeNoteRzp').classList.toggle('hidden',!rzp);
-    $('payTxt').textContent=rzp?'Pay Rs 499 & submit':'Submit application';
+    var qr=qrMode(), co=checkoutMode();
+    if($('qrBlock')) $('qrBlock').classList.toggle('hidden',!qr);
+    if($('rzpBlock')) $('rzpBlock').classList.toggle('hidden',!co);
+    if($('feeNoteRzp')) $('feeNoteRzp').classList.toggle('hidden',!(qr||co));
+    var pb=$('payBtn'); pb.disabled=false; pb.classList.toggle('hidden',qr);
+    $('payTxt').textContent=co?'Pay Rs 499 & submit':'Submit application';
+    $('payErr').textContent='';
+    if(qr) startQr();
   }
+  function startQr(){
+    stopQrPoll(); qrId='';
+    var img=$('qrImg'); if(img) img.style.opacity=.25;
+    qrStatus('Preparing your payment QR...');
+    AdyaPay.createQr({name:pendingPayload.name,email:pendingPayload.email}).then(function(q){
+      qrId=q.qr_id;
+      if(img){ img.src=q.image_url; img.style.opacity=1; }
+      qrStatus('Waiting for payment - this page updates itself when the money arrives.');
+      qrTimer=setInterval(pollQr,4000);
+    }).catch(function(){
+      qrStatus('The QR could not be prepared just now.');
+      $('payErr').textContent='Payment QR could not start. Try "Pay by card or netbanking instead", or go back and retry in a moment.';
+    });
+  }
+  function pollQr(){
+    if(!qrId||qrBusy) return; qrBusy=true;
+    AdyaPay.checkQr(qrId).then(function(j){
+      qrBusy=false;
+      if(j.paid){ stopQrPoll(); qrPaid(); }
+      else if(j.expired){ stopQrPoll(); qrStatus('That QR timed out - making a fresh one...'); startQr(); }
+    }).catch(function(){ qrBusy=false; });
+  }
+  function qrPaid(){
+    qrStatus('Payment received. Submitting your application...',true);
+    pendingPayload.feeInr=499; pendingPayload.feeMethod='upi_qr'; pendingPayload.feeRef=qrId; pendingPayload.feeStatus='paid_unverified';
+    submitApp(pendingPayload);
+  }
+  $('qrCardFallback').addEventListener('click',function(){
+    var perr=$('payErr'); perr.textContent='';
+    if(!pendingPayload){ perr.textContent='Your form details were lost. Please go back and submit again.'; return; }
+    stopQrPoll(); qrStatus('Opening secure card / netbanking payment...');
+    AdyaPay.charge({ name:pendingPayload.name, email:pendingPayload.email,
+      onSuccess:function(r){
+        pendingPayload.feeInr=499; pendingPayload.feeMethod='razorpay';
+        pendingPayload.feeRef=r.paymentId; pendingPayload.feeOrderId=r.orderId; pendingPayload.feeSignature=r.signature;
+        pendingPayload.feeStatus='paid_unverified';
+        qrStatus('Payment received. Submitting your application...',true);
+        submitApp(pendingPayload);
+      },
+      onDismiss:function(){ qrStatus('Waiting for payment - this page updates itself when the money arrives.'); if(qrId) qrTimer=setInterval(pollQr,4000); perr.textContent='Card payment was not completed. You can still scan the QR.'; },
+      onError:function(m){ qrStatus('Waiting for payment - this page updates itself when the money arrives.'); if(qrId) qrTimer=setInterval(pollQr,4000); perr.textContent=m||'Payment failed. No money was taken - please try again.'; }
+    });
+  });
   $('payBtn').addEventListener('click',function(){
     var perr=$('payErr'); perr.textContent='';
     if(!pendingPayload){ perr.textContent='Your form details were lost. Please go back and submit again.'; return; }
     var pb=$('payBtn');
-    if(rzpMode()){
+    if(checkoutMode()){
       pb.disabled=true; $('payTxt').textContent='Opening secure payment...';
       AdyaPay.charge({ name:pendingPayload.name, email:pendingPayload.email,
         onSuccess:function(r){
@@ -140,11 +190,6 @@
       });
       return;
     }
-    var utr=$('utr').value.trim();
-    if(!/^\d{12}$/.test(utr)){ perr.textContent='Enter the 12-digit UTR from your UPI app after paying Rs 499. The application submits only with it.'; return; }
-    pendingPayload.utr=utr; pendingPayload.feeInr=499; pendingPayload.feeMethod='upi'; pendingPayload.feeStatus='pending_verification';
-    pb.disabled=true; $('payTxt').textContent='Submitting...';
-    submitApp(pendingPayload);
   });
 
   /* ---------- copy / share ---------- */
