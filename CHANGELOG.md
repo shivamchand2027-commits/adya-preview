@@ -1,5 +1,11 @@
 # Changelog
 
+## October 22, 2026 (evening)
+
+### "Why Rs 499" explainer at the fee step
+
+- Premium explainer block added above the payment options: serious read with no credibility filter + detailed team feedback, golden pass to gold features (VC connects, founder community, step-by-step guidance), honest terms (fee buys the read, not admission). Live on the preview; Razorpay test mode unchanged.
+
 ## Oct 22, 2026 - Open-lane Rs 499 application fee (Razorpay Standard Checkout)
 
 - The "Apply anyway" (no-invite) journey now collects a one-time Rs 499 review fee before submission; invited founders apply free (backend-enforced, not just frontend copy).
