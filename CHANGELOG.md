@@ -1,5 +1,14 @@
 # Changelog
 
+## October 22, 2026 (night, second drop)
+
+### Dynamic per-application UPI QR at the fee step (ships at go-live)
+
+- Backend v13: `createfeeqr` mints a single_use, exactly-Rs 499 UPI QR per applicant (30-min validity); `checkfeeqr` reports paid/expired from the QR entity's payments_amount_received; submissions with feeMethod `upi_qr` are verified server-side (amount + reuse check) before the row is written.
+- Frontend QR mode (provider `qr` in config.js): dynamic QR image at the fee step, 4s auto-poll, auto-submit on payment, expired QR regenerates, "Pay by card or netbanking instead" runs the existing checkout as fallback.
+- Verified: Razorpay's QR Codes API is live-mode only (test keys get "no Route matched"), so the first real QR mints after KYC activation + live keys. Production stays on the Razorpay checkout (test mode) until the go-live flip.
+
+
 ## October 22, 2026 (night)
 
 ### Test keys rotated
