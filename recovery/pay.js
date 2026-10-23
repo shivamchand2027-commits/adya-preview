@@ -10,7 +10,7 @@ window.AdyaPay=(function(){
     return fetch(window.BACKEND_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
       body:JSON.stringify({action:'createfeeorder',email:opts.email||'',name:opts.name||''})})
       .then(function(r){ return r.json(); })
-      .then(function(j){ if(j&&j.error==='already_submitted'){ var e=new Error('already_submitted'); e.ticket=j.ticket||''; throw e; } if(!j.ok||!j.order_id) throw new Error('order_failed'); return j.order_id; });
+      .then(function(j){ if(j&&j.error==='already_submitted'){ throw new Error('already_submitted'); } if(!j.ok||!j.order_id) throw new Error('order_failed'); return j.order_id; });
   }
   function charge(opts){ /* opts: {name,email,onSuccess({paymentId,orderId,signature}),onDismiss,onError} */
     if(cfg.provider==='razorpay'&&cfg.keyId){
@@ -26,7 +26,7 @@ window.AdyaPay=(function(){
         rzp.on('payment.failed',function(){ if(opts.onError) opts.onError('Payment did not go through. If your account was debited for this failed attempt, your bank usually returns it automatically.'); });
         rzp.open();
       };
-      var start=function(){ createOrder(opts).then(go,function(e){ if(opts.onError){ if(e&&e.message==='already_submitted') opts.onError('Our records show a paid application already exists for this email'+(e.ticket?(' - ticket '+e.ticket):'')+'. Use Application Status on this page to look it up; do not pay again.'); else opts.onError('Payment could not start. Please try again in a moment.'); } }); };
+      var start=function(){ createOrder(opts).then(go,function(e){ if(opts.onError){ if(e&&e.message==='already_submitted') opts.onError('An application with a paid fee already exists for this email. Your application details were emailed to you; if you cannot find them, use the query form on our FAQ page. Do not pay again.'); else opts.onError('Payment could not start. Please try again in a moment.'); } }); };
       if(window.Razorpay) start(); else loadScript('https://checkout.razorpay.com/v1/checkout.js').then(start,function(){ if(opts.onError) opts.onError('Payment could not load. Check your connection and try again.'); });
     } else if(cfg.linkUrl){
       window.open(cfg.linkUrl,'_blank','noopener');

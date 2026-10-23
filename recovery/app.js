@@ -94,7 +94,12 @@
        btn.disabled=false; $('submitTxt').textContent=ST;
        if(!j.ok){
          if(payload.feeMethod==='razorpay'&&payload.feeRef){
-           if(j.error==='payment_already_used'){ AdyaPay.clearCreds(); return showDone(payload,j.ticket||'','',true); }
+           if(j.error==='payment_already_used'){ AdyaPay.clearCreds();
+             if($('payCard')){ $('formCard').classList.add('hidden'); $('payCard').classList.remove('hidden'); }
+             var pbu=$('payBtn'); if(pbu) pbu.disabled=true;
+             $('payTxt').textContent='Payment already recorded';
+             var peru=$('payErr'); if(peru) peru.textContent='This payment is already linked to an application. Your application details were emailed to you when it was recorded. If you cannot find them, use the query form on our FAQ page with the same application email - do not pay again.';
+             return; }
            return paidUncertain();
          }
          var m={bad_email:'The email address looks invalid.',too_big:'The file is too large.',no_deck:'A deck is required.',payment_not_verified:'We could not confirm your application after payment. If your account was debited, do not pay again. Use the query form on our FAQ page with the same application email so we can check the payment and submission status.',fee_required:'The Rs 499 review fee is required for open applications.',bad_utr:'Enter the 12-digit UTR from your UPI app after paying.',bad_invite:'This invitation code is no longer valid.',invite_used_up:'This code has no nominations left.'}[j.error]||'Something went wrong on our side. Please try again.';
