@@ -74,7 +74,7 @@
      .then(function(r){ return r.json(); })
      .then(function(j){
        btn.disabled=false; $('submitTxt').textContent=ST;
-       if(!j.ok){ var m={bad_email:'The email address looks invalid.',too_big:'The file is too large.',no_deck:'A deck is required.',payment_not_verified:'The payment could not be verified. If money was taken, it is auto-refunded by Razorpay - please try again or write to us.',fee_required:'The Rs 499 review fee is required for open applications.',bad_utr:'Enter the 12-digit UTR from your UPI app after paying.',bad_invite:'This invitation code is no longer valid.',invite_used_up:'This code has no nominations left.'}[j.error]||'Something went wrong on our side. Please try again.';
+       if(!j.ok){ var m={bad_email:'The email address looks invalid.',too_big:'The file is too large.',no_deck:'A deck is required.',payment_not_verified:'We could not confirm your application after payment. If your account was debited, do not pay again. Use the query form on our FAQ page with the same application email so we can check the payment and submission status. If a refund is due, it typically reaches your original payment method within 5-7 working days after the refund is initiated.',fee_required:'The Rs 499 review fee is required for open applications.',bad_utr:'Enter the 12-digit UTR from your UPI app after paying.',bad_invite:'This invitation code is no longer valid.',invite_used_up:'This code has no nominations left.'}[j.error]||'Something went wrong on our side. Please try again.';
          if($('payCard')&&!$('payCard').classList.contains('hidden')){ stopQrPoll(); $('payCard').classList.add('hidden'); $('formCard').classList.remove('hidden'); var pb2=$('payBtn'); if(pb2){ pb2.disabled=false; pb2.classList.toggle('hidden',qrMode()); $('payTxt').textContent=checkoutMode()?'Pay Rs 499 & submit':'Submit application'; } }
          return fail(m); }
        LS.set('adya_ticket',{email:payload.email,ticket:j.ticket,code:j.code});
@@ -86,7 +86,7 @@
        $('formCard').classList.add('hidden'); if($('payCard')) $('payCard').classList.add('hidden'); $('doneCard').classList.remove('hidden');
        $('doneCard').scrollIntoView({behavior:'smooth'});
      })
-     .catch(function(){ btn.disabled=false; $('submitTxt').textContent=ST; fail('Connection problem. Please try again.'); });
+     .catch(function(){ btn.disabled=false; $('submitTxt').textContent=ST; fail('We could not confirm your application after payment. If your account was debited, do not pay again. Use the query form on our FAQ page with the same application email so we can check the payment and submission status. If a refund is due, it typically reaches your original payment method within 5-7 working days after the refund is initiated.'); });
   }
   $('pitch').addEventListener('submit',function(e){
     e.preventDefault(); err.textContent='';
@@ -168,7 +168,7 @@
         submitApp(pendingPayload);
       },
       onDismiss:function(){ qrStatus('Waiting for payment - this page updates itself when the money arrives.'); if(qrId) qrTimer=setInterval(pollQr,4000); perr.textContent='Card payment was not completed. You can still scan the QR.'; },
-      onError:function(m){ qrStatus('Waiting for payment - this page updates itself when the money arrives.'); if(qrId) qrTimer=setInterval(pollQr,4000); perr.textContent=m||'Payment failed. No money was taken - please try again.'; }
+      onError:function(m){ qrStatus('Waiting for payment - this page updates itself when the money arrives.'); if(qrId) qrTimer=setInterval(pollQr,4000); perr.textContent=m||'We could not confirm your application after payment. If your account was debited, do not pay again. Use the query form on our FAQ page with the same application email so we can check the payment and submission status. If a refund is due, it typically reaches your original payment method within 5-7 working days after the refund is initiated.'; }
     });
   });
   $('payBtn').addEventListener('click',function(){
@@ -186,7 +186,7 @@
           submitApp(pendingPayload);
         },
         onDismiss:function(){ pb.disabled=false; $('payTxt').textContent='Pay Rs 499 & submit'; perr.textContent='Payment was not completed. The application submits only after the Rs 499 payment goes through.'; },
-        onError:function(m){ pb.disabled=false; $('payTxt').textContent='Pay Rs 499 & submit'; perr.textContent=m||'Payment failed. No money was taken - please try again.'; }
+        onError:function(m){ pb.disabled=false; $('payTxt').textContent='Pay Rs 499 & submit'; perr.textContent=m||'We could not confirm your application after payment. If your account was debited, do not pay again. Use the query form on our FAQ page with the same application email so we can check the payment and submission status. If a refund is due, it typically reaches your original payment method within 5-7 working days after the refund is initiated.'; }
       });
       return;
     }

@@ -35,7 +35,7 @@ window.AdyaPay=(function(){
           handler:function(resp){ opts.onSuccess({paymentId:resp.razorpay_payment_id||'',orderId:resp.razorpay_order_id||orderId,signature:resp.razorpay_signature||''}); },
           modal:{ondismiss:function(){ if(opts.onDismiss) opts.onDismiss(); }}
         });
-        rzp.on('payment.failed',function(){ if(opts.onError) opts.onError('Payment failed. No money was taken - please try again.'); });
+        rzp.on('payment.failed',function(){ if(opts.onError) opts.onError('Payment failed. If your account was debited for this failed payment, the amount should be automatically reversed by your bank within 7 working days.'); });
         rzp.open();
       };
       var start=function(){ createOrder(opts).then(go,function(){ if(opts.onError) opts.onError('Payment could not start. Please try again in a moment.'); }); };

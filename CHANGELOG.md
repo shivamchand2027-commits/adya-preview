@@ -1,5 +1,11 @@
 # Changelog
 
+## October 24, 2026
+
+### Refund/failure copy: source-backed two-state wording (owner-approved exact words, 24 Oct 03:02 IST)
+- Syncs the preview root and recovery/ twin with the LIVE two-state copy: failed-payment line (bank auto-reversal, 7 working days, per Razorpay payments FAQ) and uncertain-after-payment line (do not pay again, FAQ query route, refund typically 5-7 working days after initiation, per Razorpay refunds doc).
+- Removes the pre-hardening "auto-refunded by Razorpay" payment_not_verified line, the "No money was taken" fallbacks, and the bare "Connection problem" post-submit catch.
+
 ## October 22, 2026 (night, second drop)
 
 ### Dynamic per-application UPI QR at the fee step (ships at go-live)
